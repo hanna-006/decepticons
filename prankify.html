@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Bulletin — Daily Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── CONFIG: swap these two lines when you have real assets ── */
+  :root {
+    --music-src: "https://drive.google.com/file/d/1XuPpQqFn1292anXzADtC3eSxhbEPsDDK/view?usp=sharing";   /* not used in CSS, see JS */
+    --dancer-src: "https://photos.app.goo.gl/G95vTZQNk4Kn1UfX9";  /* not used in CSS, see JS */
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:      #1a1612;
+    --paper:    #f5f0e8;
+    --cream:    #ede7d9;
+    --rust:     #c0392b;
+    --gold:     #b8860b;
+    --muted:    #7a736a;
+    --rule:     #c8bfb0;
+  }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── MASTHEAD ─── */
+  .masthead {
+    border-bottom: 3px double var(--ink);
+    padding: 0 2rem;
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .masthead-top span b { color: var(--rust); }
+  .masthead-title {
+    text-align: center;
+    padding: 1.2rem 0 0.8rem;
+  }
+  .masthead-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .masthead-title .tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.4rem;
+  }
+  .masthead-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .masthead-nav a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0 1.2rem;
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+  }
+  .masthead-nav a:last-child { border-right: none; }
+  .masthead-nav a:hover { color: var(--rust); }
+
+  /* ─── BREAKING BAR ─── */
+  .breaking-bar {
+    background: var(--rust);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 2rem;
+    display: flex;
+    gap: 1.5rem;
+    overflow: hidden;
+  }
+  .breaking-bar .label {
+    background: white;
+    color: var(--rust);
+    padding: 0.1rem 0.5rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ticker-wrap { overflow: hidden; flex: 1; }
+  .ticker {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker 18s linear infinite;
+  }
+  @keyframes ticker {
+    0%   { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ─── LAYOUT ─── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── HERO GRID ─── */
+  .hero-section {
+    display: grid;
+    grid-template-columns: 1fr 1px 380px;
+    gap: 0;
+    padding: 2rem 0 1.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .divider-v { background: var(--rule); }
+
+  .hero-main { padding-right: 2rem; }
+  .hero-main .kicker {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rust);
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+  }
+  .hero-main h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .hero-main .deck {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #3a3530;
+    margin-bottom: 1.2rem;
+  }
+  .hero-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    margin-bottom: 0.8rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-img svg { width: 100%; height: 100%; }
+  .byline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .byline b { color: var(--ink); }
+
+  /* sidebar stories */
+  .sidebar { padding-left: 2rem; }
+  .sidebar-story {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+  }
+  .sidebar-story:first-child { padding-top: 0; }
+  .sidebar-story:last-child { border-bottom: none; }
+  .sidebar-story .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--rule);
+    line-height: 1;
+  }
+  .sidebar-story h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0.2rem 0;
+  }
+  .sidebar-story p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .sidebar-story:hover h4 { color: var(--rust); }
+
+  /* ─── ARTICLE GRID ─── */
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1.2rem 0 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 1.5rem;
+  }
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .article-card { cursor: pointer; }
+  .article-card .art-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .article-card .art-img svg { width: 100%; height: 100%; }
+  .article-card .kicker {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 0.3rem;
+  }
+  .article-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .article-card p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+  }
+  .read-more {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .read-more:hover { color: var(--rust); border-color: var(--rust); }
+  .article-card:hover h3 { color: var(--rust); }
+
+  /* ─── OPINION ROW ─── */
+  .opinion-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .opinion-card { cursor: pointer; display: flex; gap: 1rem; align-items: flex-start; }
+  .opinion-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .opinion-avatar svg { width: 100%; height: 100%; }
+  .opinion-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 0.3rem;
+  }
+  .opinion-card .author {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .opinion-card:hover h4 { color: var(--rust); }
+
+  /* ─── SUBSCRIBE BANNER ─── */
+  .subscribe-banner {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border: 2px solid var(--ink);
+    margin: 2rem 0;
+    position: relative;
+    background: var(--cream);
+  }
+  .subscribe-banner::before {
+    content: '✦';
+    position: absolute; top: -0.7rem; left: 50%;
+    transform: translateX(-50%);
+    background: var(--cream);
+    padding: 0 0.5rem;
+    font-size: 1rem;
+    color: var(--gold);
+  }
+  .subscribe-banner h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .subscribe-banner p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+  .sub-form { display: flex; justify-content: center; gap: 0; max-width: 420px; margin: 0 auto; }
+  .sub-form input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--ink);
+    border-right: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    background: white;
+    outline: none;
+  }
+  .sub-form button {
+    padding: 0.7rem 1.4rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sub-form button:hover { background: var(--rust); border-color: var(--rust); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 3px double var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer .f-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+  }
+  footer p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─────────────────────────────────────────────
+     PRANK OVERLAY
+  ───────────────────────────────────────────── */
+  #prank-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    display: none;
+    overflow: hidden;
+  }
+
+  /* dancer sprites */
+  .dancer {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    image-rendering: pixelated;
+    animation: bounce 0.5s steps(1) infinite alternate;
+    transform-origin: center bottom;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .dancer img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  @keyframes bounce {
+    0%   { transform: scaleX(1)  translateY(0px)  rotate(-4deg); }
+    25%  { transform: scaleX(-1) translateY(-6px) rotate(4deg);  }
+    50%  { transform: scaleX(1)  translateY(-10px) rotate(-2deg);}
+    75%  { transform: scaleX(-1) translateY(-4px) rotate(3deg);  }
+    100% { transform: scaleX(1)  translateY(0px)  rotate(-4deg); }
+  }
+
+  /* april fools text */
+  #af-text {
+    position: fixed;
+    bottom: 2rem;
+    width: 100%;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    z-index: 10001;
+    pointer-events: none;
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .hero-section { grid-template-columns: 1fr; }
+    .divider-v { display: none; }
+    .hero-main { padding-right: 0; }
+    .sidebar { padding-left: 0; border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 1rem; }
+    .article-grid { grid-template-columns: 1fr 1fr; }
+    .opinion-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .article-grid { grid-template-columns: 1fr; }
+    .masthead-nav a { padding: 0 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     NEWSLETTER SITE
+════════════════════════════════════════ -->
+
+<header class="masthead">
+  <div class="masthead-top">
+    <span>Sunday, April 5, 2026</span>
+    <span>Est. 1897 &nbsp;|&nbsp; <b>Free Edition</b></span>
+    <span>Vol. CXXIX · No. 14</span>
+  </div>
+  <div class="masthead-title">
+    <h1>The Bulletin</h1>
+    <p class="tagline">Independent · Informed · Indispensable</p>
+  </div>
+  <nav class="masthead-nav">
+    <a onclick="triggerPrank()">World</a>
+    <a onclick="triggerPrank()">Politics</a>
+    <a onclick="triggerPrank()">Technology</a>
+    <a onclick="triggerPrank()">Science</a>
+    <a onclick="triggerPrank()">Culture</a>
+    <a onclick="triggerPrank()">Opinion</a>
+    <a onclick="triggerPrank()">Markets</a>
+  </nav>
+</header>
+
+<div class="breaking-bar">
+  <span class="label">Breaking</span>
+  <div class="ticker-wrap">
+    <span class="ticker">
+      Scientists Confirm That Monday Is Still The Worst Day &nbsp;&nbsp;·&nbsp;&nbsp;
+      Local Man Has Strong Opinions About Toast &nbsp;&nbsp;·&nbsp;&nbsp;
+      World Leaders Agree On Nothing, Again &nbsp;&nbsp;·&nbsp;&nbsp;
+      Stock Market Does Something, Analysts Explain Why &nbsp;&nbsp;·&nbsp;&nbsp;
+      Area Weather Expected To Continue Being Weather &nbsp;&nbsp;·&nbsp;&nbsp;
+      Breaking: Nothing Has Actually Broken Yet
+    </span>
+  </div>
+</div>
+
+<main class="container">
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <article class="hero-main" onclick="triggerPrank()">
+      <div class="kicker">Top Story · World Affairs</div>
+      <h2>Global Summit Concludes With Historic Agreement To Hold Another Summit</h2>
+      <div class="hero-img">
+        <!-- SVG placeholder illustration -->
+        <svg viewBox="0 0 700 394" xmlns="http://www.w3.org/2000/svg">
+          <rect width="700" height="394" fill="#e8e0d0"/>
+          <rect x="0" y="260" width="700" height="134" fill="#d4c9b5"/>
+          <!-- podiums -->
+          <rect x="120" y="160" width="80" height="110" fill="#c8bfb0"/>
+          <rect x="300" y="130" width="100" height="140" fill="#b8ad9e"/>
+          <rect x="500" y="175" width="80" height="95" fill="#c8bfb0"/>
+          <!-- figures -->
+          <circle cx="160" cy="140" r="22" fill="#7a736a"/>
+          <rect x="143" y="162" width="34" height="44" rx="4" fill="#5a5450"/>
+          <circle cx="350" cy="108" r="24" fill="#8a7a6a"/>
+          <rect x="332" y="132" width="36" height="48" rx="4" fill="#4a3f38"/>
+          <circle cx="540" cy="158" r="20" fill="#7a736a"/>
+          <rect x="523" y="178" width="34" height="42" rx="4" fill="#5a5450"/>
+          <!-- flags -->
+          <line x1="160" y1="100" x2="160" y2="60" stroke="#999" stroke-width="2"/>
+          <rect x="160" y="60" width="30" height="20" fill="#c0392b"/>
+          <line x1="350" y1="76" x2="350" y2="36" stroke="#999" stroke-width="2"/>
+          <rect x="350" y="36" width="30" height="20" fill="#2980b9"/>
+          <line x1="540" y1="118" x2="540" y2="78" stroke="#999" stroke-width="2"/>
+          <rect x="540" y="78" width="30" height="20" fill="#27ae60"/>
+          <!-- banner -->
+          <rect x="150" y="280" width="400" height="50" rx="4" fill="#c8bfb0"/>
+          <text x="350" y="311" text-anchor="middle" font-family="serif" font-size="14" fill="#5a5450">WORLD LEADERSHIP FORUM 2026</text>
+        </svg>
+      </div>
+      <p class="deck">After three days of intensive discussions, world leaders have successfully reached a landmark consensus: they will convene again in six months to discuss the feasibility of a potential framework for future discussions.</p>
+      <p class="byline">By <b>Eleanor Whitmore</b> · Senior Correspondent &nbsp;·&nbsp; 4 min read</p>
+      <br>
+      <span class="read-more">Continue Reading →</span>
+    </article>
+
+    <div class="divider-v"></div>
+
+    <aside class="sidebar">
+      <div class="section-label">Also In The News</div>
+      <div class="sidebar-story" onclick="triggerPrank()">
+        <div class="num">01</div>
+        <h4>Tech Giant Launches New Product That Is Basically The Old Product</h4>
+        <p>Analysts call it "transformative." Consumers call it "$200 more."</p>
+      </div>
+      <div class="sidebar-story" onclick="triggerPrank()">
+        <div class="num">02</div>
+        <h4>Economists Divided On Whether Economy Is Doing A Thing</h4>
+        <p>Both sides agree the data is "interesting" and "worth watching."</p>
+      </div>
+      <div class="sidebar-story" onclick="triggerPrank()">
+        <div class="num">03</div>
+        <h4>Scientists Discover New Species That Is Surprisingly Fine</h4>
+        <p>Unlike most discoveries this year, this one is just a cute beetle.</p>
+      </div>
+      <div class="sidebar-story" onclick="triggerPrank()">
+        <div class="num">04</div>
+        <h4>Local Council Votes To Discuss Whether To Vote On Thing</h4>
+        <p>Decision expected sometime before or after the heat death of the sun.</p>
+      </div>
+    </aside>
+  </section>
+
+  <!-- MORE ARTICLES -->
+  <div class="section-label">Latest Stories</div>
+  <div class="article-grid">
+
+    <article class="article-card" onclick="triggerPrank()">
+      <div class="art-img">
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#ddd5c5"/>
+          <circle cx="200" cy="100" r="60" fill="#c8bfb0"/>
+          <rect x="120" y="160" width="160" height="100" rx="4" fill="#b8ad9e"/>
+          <rect x="155" y="185" width="40" height="55" rx="3" fill="#9a9080"/>
+          <rect x="205" y="185" width="40" height="55" rx="3" fill="#9a9080"/>
+          <circle cx="200" cy="90" r="22" fill="#8a7a6a"/>
+          <path d="M178 118 Q200 135 222 118" fill="none" stroke="#5a5450" stroke-width="3"/>
+        </svg>
+      </div>
+      <div class="kicker">Technology</div>
+      <h3>AI Now Capable Of Explaining Why It Cannot Do The Thing You Asked</h3>
+      <p>Researchers hail the breakthrough as "genuinely impressive" while noting it remains "completely useless in practice."</p>
+      <span class="read-more">Read More →</span>
+    </article>
+
+    <article class="article-card" onclick="triggerPrank()">
+      <div class="art-img">
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#cce0d5"/>
+          <ellipse cx="200" cy="200" rx="140" ry="70" fill="#a8c8b8"/>
+          <rect x="170" y="100" width="60" height="110" fill="#6aaa88"/>
+          <ellipse cx="200" cy="95" rx="70" ry="50" fill="#5a9a78"/>
+          <circle cx="160" cy="80" r="30" fill="#6aaa88"/>
+          <circle cx="240" cy="75" r="25" fill="#6aaa88"/>
+          <rect x="130" y="200" width="30" height="60" fill="#7a6a58"/>
+          <rect x="230" y="210" width="30" height="50" fill="#7a6a58"/>
+        </svg>
+      </div>
+      <div class="kicker">Environment</div>
+      <h3>New Report Finds Nature Still Out There, Doing Its Thing</h3>
+      <p>Birds continue to bird. Trees remain tree-shaped. Oceans, sources confirm, are still wet.</p>
+      <span class="read-more">Read More →</span>
+    </article>
+
+    <article class="article-card" onclick="triggerPrank()">
+      <div class="art-img">
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#e0d5cc"/>
+          <rect x="40" y="60" width="320" height="200" rx="6" fill="#c8bfb0"/>
+          <rect x="60" y="80" width="280" height="160" rx="4" fill="#1a1612"/>
+          <polyline points="70,220 130,140 180,170 230,100 300,160 360,120" fill="none" stroke="#c0392b" stroke-width="3"/>
+          <text x="200" y="260" text-anchor="middle" font-family="serif" font-size="11" fill="#7a736a">Quarterly Markets Overview</text>
+        </svg>
+      </div>
+      <div class="kicker">Markets</div>
+      <h3>Markets Close Up, Down, Or Sideways — Experts Have Thoughts</h3>
+      <p>In a move that surprised absolutely no one who wasn't paying attention, stocks moved in a direction today.</p>
+      <span class="read-more">Read More →</span>
+    </article>
+
+  </div>
+
+  <!-- OPINION -->
+  <div class="section-label" style="margin-top:1.5rem">Opinion</div>
+  <div class="opinion-row">
+    <div class="opinion-card" onclick="triggerPrank()">
+      <div class="opinion-avatar">
+        <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+          <rect width="52" height="52" fill="#d4c9b5"/>
+          <circle cx="26" cy="20" r="12" fill="#8a7a6a"/>
+          <ellipse cx="26" cy="46" rx="18" ry="12" fill="#6a5a50"/>
+        </svg>
+      </div>
+      <div>
+        <h4>"The Internet Was Supposed to Make Us Smarter. We Have Only Ourselves to Blame."</h4>
+        <div class="author">Reginald Fothergill · Senior Fellow, Institute of Vague Concerns</div>
+      </div>
+    </div>
+    <div class="opinion-card" onclick="triggerPrank()">
+      <div class="opinion-avatar">
+        <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+          <rect width="52" height="52" fill="#d4c9b5"/>
+          <circle cx="26" cy="20" r="12" fill="#9a8a7a"/>
+          <ellipse cx="26" cy="46" rx="18" ry="12" fill="#7a6a60"/>
+        </svg>
+      </div>
+      <div>
+        <h4>"I Have Been Covering Politics For 30 Years And I Am Not Sure Any Of It Mattered"</h4>
+        <div class="author">Patricia Nwachukwu · Political Correspondent, Semi-Retired Idealist</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIBE -->
+  <div class="subscribe-banner">
+    <h3>Never Miss a Story</h3>
+    <p>Join 847,000 readers who start their morning with The Bulletin. No noise, no spam — just news.</p>
+    <div class="sub-form">
+      <input type="email" placeholder="your@email.com">
+      <button onclick="triggerPrank()">Subscribe</button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="f-title">The Bulletin</div>
+  <p>© 2026 The Bulletin Press Ltd. &nbsp;·&nbsp; Est. 1897 &nbsp;·&nbsp; All Rights Reserved</p>
+  <p>Contact · Privacy · Terms · <a onclick="triggerPrank()" style="cursor:pointer;color:var(--rust)">Archives</a></p>
+</footer>
+
+
+<!-- PRANK OVERLAY -->
+<div id="prank-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden;"></div>
+<div id="af-text" style="display:none;position:fixed;bottom:2rem;width:100%;text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.2rem,3vw,2rem);color:rgba(255,255,255,0.9);z-index:10001;pointer-events:none;">🎉 April Fools!</div>
+
+<script>
+  function triggerPrank() { document.dispatchEvent(new Event("click")); }
+  var MUSIC_URL  = "https://files.catbox.moe/5cm6em.mp3";
+  var DANCER_URL = "https://files.catbox.moe/hl0e2v.mp4";
+  var prankStarted = false;
+  var dancerCount = 0;
+
+  document.addEventListener('click', function() {
+    if (prankStarted) return;
+    prankStarted = true;
+
+    document.getElementById('prank-overlay').style.display = 'block';
+
+    var aud = new Audio(MUSIC_URL);
+    aud.loop = true;
+    aud.volume = 1;
+    aud.play().catch(function(){});
+
+    spawnDancer();
+
+    setTimeout(function(){
+      document.getElementById('af-text').style.display = 'block';
+    }, 3000);
+  });
+
+  function spawnDancer() {
+    if (dancerCount >= 60) return;
+    dancerCount++;
+
+    var overlay = document.getElementById('prank-overlay');
+    var el = document.createElement('div');
+    var size = 60 + Math.random() * 80;
+    el.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;';
+
+    if (dancerCount === 1) {
+      el.style.left = (window.innerWidth / 2 - size/2) + 'px';
+      el.style.top  = (window.innerHeight / 2 - size/2) + 'px';
+    } else {
+      el.style.left = Math.random() * (window.innerWidth - size) + 'px';
+      el.style.top  = Math.random() * (window.innerHeight - size) + 'px';
+    }
+
+    var vid = document.createElement('video');
+    vid.src = DANCER_URL;
+    vid.autoplay = true;
+    vid.loop = true;
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+    vid.play().catch(function(){});
+
+    el.appendChild(vid);
+    overlay.appendChild(el);
+
+    setTimeout(spawnDancer, Math.max(80, 350 - dancerCount * 5));
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') location.reload();
+  });
+</script>
+
+</body>
+</html>
